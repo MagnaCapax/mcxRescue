@@ -1,0 +1,12 @@
+
+[Unit]
+Description=Load mcxTemplate
+ConditionKernelCommandLine=|load-mcxtemplate
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/{{ PRODUCT_ID }}/load-mcxtemplate
+
+
+[Install]
+WantedBy=multi-user.target

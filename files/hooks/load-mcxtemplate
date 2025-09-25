@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# SPDX-PackageSummary: mcxRescue-live-build
+# SPDX-FileComment: mcxRescue Template Engine Loader
+
+
+cd /opt
+git clone https://github.com/MagnaCapax/mcxRescue
