@@ -45,7 +45,7 @@ jobs:
           # Source ISO
           TEMP_BUILD_DIR="$(sudo mktemp -d -p "$(pwd)/build")"
           sudo env SOURCE_ISO=true BUILD_DIR="${TEMP_BUILD_DIR?}" ./finnix-live-build
-          sudo mv "${TEMP_BUILD_DIR}/lb/finnix-source.iso" build/lb/
+          sudo mv "${TEMP_BUILD_DIR}/lb/mcxRescue-source.iso" build/lb/
           sudo rm -rf "${TEMP_BUILD_DIR?}"
           echo "Note: The build information listed above is not used; only the source ISO is saved."
           echo "See the 'Build image' step for actual build information."
@@ -55,7 +55,7 @@ jobs:
       - name: "Attest"
         uses: "actions/attest-build-provenance@v3"
         with:
-          subject-path: "${{ github.workspace }}/build/lb/finnix-*.iso"
+          subject-path: "${{ github.workspace }}/build/lb/mcxRescue-*.iso"
       - name: "Upload artifacts"
         uses: "actions/upload-artifact@v4"
         with:
