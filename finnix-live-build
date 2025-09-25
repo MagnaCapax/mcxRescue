@@ -6,8 +6,8 @@
 
 set -e
 
-PRODUCT="${PRODUCT:-Finnix}"
-PRODUCT_ID="${PRODUCT_ID:-finnix}"
+PRODUCT="${PRODUCT:-mcxRescue}"
+PRODUCT_ID="${PRODUCT_ID:-mcxRescue}"
 VERSION="${VERSION:-dev}"
 CODENAME="${CODENAME:-Rhinelander}"
 ARCH="${ARCH:-$(dpkg --print-architecture)}"
