@@ -67,7 +67,7 @@ jobs:
       - name: "Attest"
         uses: "actions/attest-build-provenance@v3"
         with:
-          subject-path: "${{ github.workspace }}/build/lb/finnix-*.iso"
+          subject-path: "${{ github.workspace }}/build/lb/mcxRescue-*.iso"
       - name: "Upload artifacts"
         uses: "actions/upload-artifact@v4"
         with:
