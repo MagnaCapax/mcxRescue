@@ -69,6 +69,7 @@ fetchmail
 file
 finger
 fsarchiver
+fio
 {%- if ARCH == "amd64" %}
 fuseext2
 {%- endif %}
@@ -166,6 +167,8 @@ patch
 pciutils
 pcmciautils
 picocom
+pigz
+php-cli
 powermgmt-base
 pppconfig
 pppoe
