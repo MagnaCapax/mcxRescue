@@ -1,3 +1,7 @@
+# SPDX-PackageSummary: mcxRescue-live-build
+# SPDX-FileComment: mcxtemplate loader chroot hook
+# SPDX-FileCopyrightText: Copyright (C) 2025 Magna Capax Finland OY
+# SPDX-License-Identifier: MPL-2.0
 
 [Unit]
 Description=Load mcxTemplate
