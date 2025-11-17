@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# SPDX-PackageSummary: mcxRescue-live-build
+# SPDX-FileComment: mcxtemplate loader chroot hook
+# SPDX-FileCopyrightText: Copyright (C) 2025 Magna Capax Finland OY
+# SPDX-License-Identifier: MPL-2.0
+
+set -e
+
+PRODUCT_ID="{{ PRODUCT_ID }}"
+
+install -D -m 0755 /hook-files/load-mcxtemplate "/usr/lib/${PRODUCT_ID}/load-mcxtemplate"
+install -D -m 0644 /hook-files/load-mcxtemplate.service /etc/systemd/system/load-mcxtemplate.service
+systemctl add-wants multi-user.target load-mcxtemplate.service

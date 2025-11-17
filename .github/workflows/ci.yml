@@ -49,7 +49,7 @@ jobs:
         uses: "actions/cache@v4"
         with:
           path: "build/cache"
-          key: "finnix-live-build-1"
+          key: "mcxRescue-live-build-1"
       - name: "Dependency packages"
         run: |
           sudo apt update
