@@ -5,5 +5,40 @@
 # SPDX-FileCopyrightText: Copyright (C) 2025 Magna Capax Finland Oy
 # SPDX-License-Identifier: MPL-2.0
 
-cd /opt
-git clone https://github.com/MagnaCapax/mcxRescue
+# Purpose:
+# - Idempotently ensure the mcxRescue template engine repository exists under /opt
+# - If present, update it with a fast-forward pull; if missing, perform a shallow clone
+# - This script is invoked by a oneshot systemd unit gated by kernel cmdline flag `load-mcxtemplate`
+
+# Fail fast on errors and undefined variables
+set -eu
+
+# Ensure /opt exists and change into it safely
+if [ ! -d /opt ]; then
+    mkdir -p /opt
+fi
+cd /opt || exit 1
+
+# Ensure git is available; if not, exit gracefully (service will show failure)
+if ! command -v git >/dev/null 2>&1; then
+    echo "load-mcxtemplate: 'git' not found in PATH; cannot fetch mcxRescue" >&2
+    exit 1
+fi
+
+# Avoid interactive prompts if credentials would be requested
+export GIT_TERMINAL_PROMPT=0
+
+# Allow overrides via environment/kcmdline (can be wired later if needed)
+REPO_URL="${MCXTEMPLATE_REPO_URL:-https://github.com/MagnaCapax/mcxRescue}"
+REPO_DIR="${MCXTEMPLATE_DIR:-mcxRescue}"
+
+# Idempotent fetch/update
+if [ -d "${REPO_DIR}/.git" ]; then
+    # Fast-forward update of existing checkout; no history rewrite
+    git -C "${REPO_DIR}" pull --ff-only --quiet
+else
+    # Shallow clone for speed; sufficient for runtime usage
+    git clone --depth=1 --quiet "${REPO_URL}" "${REPO_DIR}"
+fi
+
+echo "load-mcxtemplate: repository ready at /opt/${REPO_DIR}" >&2
