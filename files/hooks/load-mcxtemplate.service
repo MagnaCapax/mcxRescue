@@ -5,10 +5,12 @@
 
 [Unit]
 Description=Load mcxTemplate
-ConditionKernelCommandLine=|load-mcxtemplate
+Wants=network-online.target
+After=network-online.target
 
 [Service]
 Type=oneshot
+TimeoutStartSec=90s
 ExecStart=/usr/lib/{{ PRODUCT_ID }}/load-mcxtemplate
 
 

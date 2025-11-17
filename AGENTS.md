@@ -17,13 +17,24 @@
 - Avoid New Stacks: Use POSIX shell for hooks, Bash as needed; Python only where already used (templating, helpers). Introducing new runtimes requires approval.
 - No Aliases: Keep identifiers, environment variables, and filenames consistent. Avoid alternate names for the same concept.
 - Backward Compatibility: Don’t break existing automation/consumers (e.g., artifact names, paths) without an ADR and migration plan.
+- Always Attempt Completion: Never skip required work behind optional gates (e.g., kernel cmdline). Attempt the job unconditionally and degrade gracefully; only skip on explicit user opt‑out or when truly impossible.
 
 ## Repo‑Specific Adaptations (Finnix live‑build fork)
 - Upstream Alignment: This is a thin wrapper around Debian Live’s live‑build (Finnix). Prefer configuration over code; avoid upstream divergence without clear rationale.
 - Artifacts: ISO filenames derive from `${PRODUCT_ID}-${ARCH}` (default `mcxRescue`), e.g., `mcxRescue-amd64.hybrid.iso`. Keep CI/release/schedule globs aligned with this.
-- Hooks: Keep chroot/binary hooks idempotent and explicit. Prefer systemd units gated via kernel cmdline to hidden behaviors.
+- Hooks: Keep chroot/binary hooks idempotent and explicit. Do not hide required work behind kernel cmdline gating; default to “on” and handle failures gracefully.
 - Services & Paths: Place installed helpers under `/usr/lib/${PRODUCT_ID}` and units under `/etc/systemd/system`. Respect templating variables.
 - Languages & Dependencies: Do not introduce new language runtimes; keep hook dependencies minimal and documented.
+
+## Live Boot Hooks (Operational Rules)
+- Idempotency:
+  - Hooks and oneshot services must be safe on retries (no data loss; rerunnable without side effects). The mcxTemplate loader satisfies this.
+- Failure Mode:
+  - On missing network or dependencies, fail with clear log output. Do not block reaching multi‑user target; attempt the job regardless and degrade gracefully.
+- Timeouts:
+  - Ensure oneshot services have a reasonable `TimeoutStartSec` (e.g., 90s) to avoid boot stalls.
+- Logging:
+  - Emit concise, single‑line status messages to stdout/stderr (journal) for traceability.
 
 ## Repository Layout (Expected)
 - `finnix-live-build`: Entrypoint orchestrating templating and live‑build.
@@ -74,4 +85,3 @@
 5) Ensure pre‑commit passes and SPDX headers are present.
 
 This document activates the generic rules (KISS, DRY, YAGNI, Minimal Edits, Stability‑first) for mcxRescue while staying aligned with upstream live‑build.
-
