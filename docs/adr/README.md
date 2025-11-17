@@ -1,3 +1,7 @@
+# SPDX-PackageSummary: mcxRescue-live-build
+# SPDX-FileCopyrightText: Copyright (C) 2025 Magna Capax Finland Oy
+# SPDX-License-Identifier: CC-BY-SA-4.0
+
 # Architecture Decision Records (ADR)
 
 ADRs capture significant technical decisions with their context, options, decision, and consequences. They help future contributors understand why a change was made and what trade‑offs were accepted.
@@ -17,4 +21,3 @@ When to write an ADR
 
 Template
 - Use `0000-template.md` in this directory to author new ADRs.
-

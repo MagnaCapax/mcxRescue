@@ -1,3 +1,7 @@
+# SPDX-PackageSummary: mcxRescue-live-build
+# SPDX-FileCopyrightText: Copyright (C) 2025 Magna Capax Finland Oy
+# SPDX-License-Identifier: CC-BY-SA-4.0
+
 # ADR NNNN: Title
 
 Status: Proposed
@@ -19,4 +23,3 @@ Positive, negative, and neutral outcomes. Include migration work, risks, and fol
 
 ## References
 Related ADRs, issues/PRs, external docs.
-
