@@ -7,3 +7,5 @@
 No ADRs yet.
 
 Format: `NNNN` — Title — Status
+
+0001 — Remote command via mcxCommand — Accepted

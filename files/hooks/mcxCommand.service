@@ -6,6 +6,7 @@
 [Unit]
 Description=Execute mcxCommand from kernel cmdline
 ConditionKernelCommandLine=|mcxCommand
+After=getty.target
 
 [Service]
 Type=oneshot
@@ -13,4 +14,3 @@ ExecStart=/usr/lib/{{ PRODUCT_ID }}/mcxCommand
 
 [Install]
 WantedBy=multi-user.target
-

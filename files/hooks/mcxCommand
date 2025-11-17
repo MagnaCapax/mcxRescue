@@ -46,6 +46,11 @@ if DHCP_SRV="$(get_dhcp_server 2>/dev/null || true)" && [ -n "$DHCP_SRV" ]; then
     export MCX_DHCP_SERVER="$DHCP_SRV"
 fi
 
+# Best-effort: wait until system reports 'running' (approximate "last" at boot)
+if command -v systemctl >/dev/null 2>&1; then
+    systemctl is-system-running --wait >/dev/null 2>&1 || true
+fi
+
 echo "mcxCommand: start url=$MCX_COMMAND host=$MCX_HOSTNAME" >&2
 
 tmp="/run/mcxCommand.$$\.sh"
@@ -62,4 +67,3 @@ rm -f "$tmp" || true
 
 echo "mcxCommand: done rc=$rc" >&2
 exit "$rc"
-
