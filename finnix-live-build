@@ -493,13 +493,14 @@ if [ "${LINT}" = "true" ]; then
     for fn in $(
         grep -l -E '^#!/(usr/)?bin/(env )?(ba)?sh' \
             "${LB_DIR}/config/hooks/normal"/*-finnix-*.hook.chroot \
+            "${LB_DIR}/config/hooks/normal"/*-mcxRescue-*.hook.chroot \
             "${LB_DIR}/config/includes.chroot_after_packages/hook-files"/*
     ); do
         [ -e "${fn}" ] || continue
         shellcheck "${fn}"
         [ "${has_shfmt}" = "true" ] && lint_shfmt "${fn}"
     done
-    grep -l -E '^#!/(usr/)?bin/(env )?python3' "${LB_DIR}/config/hooks/normal"/*-finnix-*.hook.chroot | xargs -r "${PYTHON}" -mflake8 --config=/dev/null --max-line-length=120
+    grep -l -E '^#!/(usr/)?bin/(env )?python3' "${LB_DIR}/config/hooks/normal"/*-finnix-*.hook.chroot "${LB_DIR}/config/hooks/normal"/*-mcxRescue-*.hook.chroot | xargs -r "${PYTHON}" -mflake8 --config=/dev/null --max-line-length=120
     grep -l -E '^#!/(usr/)?bin/(env )?python3' "${LB_DIR}/config/includes.chroot_after_packages/hook-files"/* | xargs -r "${PYTHON}" -mflake8 --config=/dev/null --max-line-length=120
 fi
 
