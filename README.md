@@ -100,3 +100,7 @@ This document is provided under the following license:
     SPDX-PackageSummary: finnix-live-build
     SPDX-FileCopyrightText: © 2020 Ryan Finnie <ryan@finnie.org>
     SPDX-License-Identifier: CC-BY-SA-4.0
+
+## Repository Guidelines
+
+For mcxRescue-specific contribution rails and engineering doctrine (KISS, DRY, YAGNI, minimal edits), see `AGENTS.md` at the repository root.
