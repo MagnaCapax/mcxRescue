@@ -23,12 +23,33 @@
 - Backward Compatibility: Don’t break existing automation/consumers (e.g., artifact names, paths) without an ADR and migration plan.
 - Always Attempt Completion: Never skip required work behind optional gates (e.g., kernel cmdline). Attempt the job unconditionally and degrade gracefully; only skip on explicit user opt‑out or when truly impossible.
 
+## Naming & Identifiers
+- Use lowerCamelCase for repository‑defined identifiers everywhere (explicit rule):
+  - Kernel cmdline keys: `mcxCommand`, `mcxStatus`, `mcxId`, `mcxArgs`, `mcxTimeout`.
+  - Systemd units and installed helper filenames: `mcxCommand.service`, `/usr/lib/${PRODUCT_ID}/mcxCommand`.
+  - Only environment variables use UPPER_SNAKE_CASE (e.g., `MCX_COMMAND`, `MCX_HOSTNAME`).
+- Values are simple strings/URIs; avoid complex encodings. Prefer HTTPS for URLs.
+- Brand/artifacts: keep user‑facing brand as `mcxRescue`.
+- ADRs: files named `NNNN-title.md`; IDs are zero‑padded numerals.
+
 ## Repo‑Specific Adaptations (Finnix live‑build fork)
 - Upstream Alignment: This is a thin wrapper around Debian Live’s live‑build (Finnix). Prefer configuration over code; avoid upstream divergence without clear rationale.
 - Artifacts: ISO filenames derive from `${PRODUCT_ID}-${ARCH}` (default `mcxRescue`), e.g., `mcxRescue-amd64.hybrid.iso`. Keep CI/release/schedule globs aligned with this.
 - Hooks: Keep chroot/binary hooks idempotent and explicit. Do not hide required work behind kernel cmdline gating; default to “on” and handle failures gracefully.
 - Services & Paths: Place installed helpers under `/usr/lib/${PRODUCT_ID}` and units under `/etc/systemd/system`. Respect templating variables.
 - Languages & Dependencies: Do not introduce new language runtimes; keep hook dependencies minimal and documented.
+
+### Remote Command + Status (kernel cmdline driven)
+- Inputs (kernel cmdline):
+  - `mcxCmd`: HTTPS URL to a shell script to execute (downloaded and run non‑interactively).
+  - `mcxStatus`: URL to receive status updates via GET (append `state=` and basic metadata).
+  - Optional: `mcxId`, `mcxArgs`, `mcxTimeout` (seconds).
+- Runner behavior (oneshot service):
+  - Always attempts to run; if inputs missing, exits quickly without error.
+  - Download script to `/run`, execute with POSIX sh; small retries and timeouts; no interactivity.
+  - Status pings: `?state=start|ok|err` plus `host`, `ts`, and `id` when available; include `rc` on error.
+  - Prefer not relying solely on `network-online` gating; implement brief internal retries to avoid missing execution.
+  - Log concise messages; never block multi‑user.
 
 ## Live Boot Hooks (Operational Rules)
 - Idempotency:

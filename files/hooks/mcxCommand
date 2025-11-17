@@ -1,0 +1,65 @@
+#!/bin/sh
+
+# SPDX-PackageSummary: mcxRescue-live-build
+# SPDX-FileComment: Execute mcxCommand from kernel cmdline (download + run)
+# SPDX-FileCopyrightText: Copyright (C) 2025 Magna Capax Finland Oy
+# SPDX-License-Identifier: MPL-2.0
+
+set -eu
+
+# Extract mcxCommand URL from kernel cmdline
+MCX_COMMAND=""
+if [ -r /proc/cmdline ]; then
+    for w in $(cat /proc/cmdline); do
+        case "$w" in
+            mcxCommand=*) MCX_COMMAND=${w#mcxCommand=};;
+        esac
+    done
+fi
+
+[ -n "$MCX_COMMAND" ] || exit 0
+
+# Minimal context for convenience (best-effort)
+export MCX_COMMAND
+export MCX_PRODUCT_ID="{{ PRODUCT_ID }}"
+export MCX_HOSTNAME="$(hostname -s 2>/dev/null || echo mcxrescue)"
+export MCX_ARCH="$(dpkg --print-architecture 2>/dev/null || uname -m)"
+
+# Best-effort network details
+IF_ROUTE_INFO="$(ip route get 1.1.1.1 2>/dev/null || true)"
+MCX_IFACE="$(printf '%s\n' "$IF_ROUTE_INFO" | awk '/ dev / {for(i=1;i<=NF;i++){if($i=="dev"){print $(i+1); exit}}}')"
+MCX_IP4="$(printf '%s\n' "$IF_ROUTE_INFO" | awk '/ src / {for(i=1;i<=NF;i++){if($i=="src"){print $(i+1); exit}}}')"
+[ -n "$MCX_IFACE" ] && export MCX_IFACE || true
+[ -n "$MCX_IP4" ] && export MCX_IP4 || true
+
+# DHCP server (best-effort)
+get_dhcp_server() {
+    # systemd-networkd leases
+    if [ -d /run/systemd/netif/leases ]; then
+        awk -F= '/^SERVER_ADDRESS=/{print $2; found=1; exit} END{if(!found) exit 1}' /run/systemd/netif/leases/* 2>/dev/null && return 0 || true
+    fi
+    # dhclient leases
+    awk '/dhcp-server-identifier/ {gsub(";","",$3); print $3; found=1; exit} END{if(!found) exit 1}' /var/lib/dhcp/dhclient*.leases 2>/dev/null && return 0 || true
+    return 1
+}
+if DHCP_SRV="$(get_dhcp_server 2>/dev/null || true)" && [ -n "$DHCP_SRV" ]; then
+    export MCX_DHCP_SERVER="$DHCP_SRV"
+fi
+
+echo "mcxCommand: start url=$MCX_COMMAND host=$MCX_HOSTNAME" >&2
+
+tmp="/run/mcxCommand.$$\.sh"
+rm -f "$tmp"
+if ! wget -q --no-check-certificate -O "$tmp" "$MCX_COMMAND"; then
+    echo "mcxCommand: download failed url=$MCX_COMMAND" >&2
+    exit 1
+fi
+chmod +x "$tmp" || true
+
+bash "$tmp" || rc=$?
+rc=${rc:-0}
+rm -f "$tmp" || true
+
+echo "mcxCommand: done rc=$rc" >&2
+exit "$rc"
+
