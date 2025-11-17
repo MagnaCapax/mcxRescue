@@ -169,6 +169,8 @@ pcmciautils
 picocom
 pigz
 php-cli
+php-curl
+php-mbstring
 powermgmt-base
 pppconfig
 pppoe
@@ -201,6 +203,7 @@ squashfs-tools
 sshfs
 strace
 stress
+sysstat
 stunnel4
 sunxi-tools
 sudo

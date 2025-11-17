@@ -279,6 +279,8 @@ if [ "${LINT}" = "true" ]; then
 
     mkdir -p "${LINT_DIR}/md/in" "${LINT_DIR}/md/out"
     for fn in "${BASE_DIR}"/*.md "${BASE_DIR}/.rrpcid"/*.md "${BASE_DIR}/files/manpages"/*.md; do
+        # Skip AGENTS.md: meta-governance file is intentionally free-form; do not auto-reflow
+        [ "$(basename "${fn}")" = "AGENTS.md" ] && continue
         md_full_path="${fn#"${BASE_DIR}/"}"
         md_dir="$(dirname "${md_full_path}")"
         mkdir -p "${LINT_DIR}/md/in/${md_dir}" "${LINT_DIR}/md/out/${md_dir}"
