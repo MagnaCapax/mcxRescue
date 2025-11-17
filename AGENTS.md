@@ -94,7 +94,14 @@
 - Shell: POSIX‑compatible; prefer `set -e` and explicit error handling. Run ShellCheck when available.
 - Python: Follow `black` and `flake8` per `pyproject.toml`.
 - YAML/JSON: Keep formatting consistent; `yamllint` and `check-json` run via pre‑commit.
-- Licensing: Maintain SPDX headers; validated by `reuse` in pre‑commit.
+- Licensing: Maintain SPDX headers; validated by `reuse` in pre-commit.
+
+## Pre-commit & Lint Checklist (Do Not Skip)
+- Scripts with a shebang must be executable (100755) or remove the shebang.
+- No trailing blank lines; exactly one newline at end of file (EOF).
+- Add SPDX headers to all new files (PackageSummary, FileCopyrightText, License).
+- Avoid case-insensitive filename collisions (GitHub runners are case-insensitive for the hook).
+- Markdown: pandoc reflow enforces ~80 cols; AGENTS.md is excluded on purpose.
 
 ## Contribution Rails
 - Start with least change; unify flows rather than adding new options.

@@ -12,4 +12,3 @@ PRODUCT_ID="{{ PRODUCT_ID }}"
 install -D -m 0755 /hook-files/load-mcxforge "/usr/lib/${PRODUCT_ID}/load-mcxforge"
 install -D -m 0644 /hook-files/load-mcxforge.service /etc/systemd/system/load-mcxforge.service
 systemctl add-wants multi-user.target load-mcxforge.service
-

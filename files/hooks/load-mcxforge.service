@@ -15,4 +15,3 @@ ExecStart=/usr/lib/{{ PRODUCT_ID }}/load-mcxforge
 
 [Install]
 WantedBy=multi-user.target
-
