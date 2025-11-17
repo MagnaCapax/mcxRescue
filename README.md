@@ -103,4 +103,5 @@ This document is provided under the following license:
 
 ## Repository Guidelines
 
-For mcxRescue-specific contribution rails and engineering doctrine (KISS, DRY, YAGNI, minimal edits), see `AGENTS.md` at the repository root.
+For mcxRescue-specific contribution rails and engineering doctrine (KISS, DRY,
+YAGNI, minimal edits), see `AGENTS.md` at the repository root.
