@@ -203,7 +203,10 @@ squashfs-tools
 sshfs
 strace
 stress
+stress-ng
 sysstat
+sysbench
+netperf
 stunnel4
 sunxi-tools
 sudo
