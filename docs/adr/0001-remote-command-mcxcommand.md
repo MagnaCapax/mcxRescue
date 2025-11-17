@@ -32,5 +32,4 @@ We need a way to perform post-boot actions on bare-metal and seedbox servers boo
 ## Alternatives Considered
 - Extra parameters (status URL, args, timeouts): rejected as option creep; simplicity wins.
 - JSON POST status and richer telemetry: rejected; logs are sufficient for now.
-- Long-running agents/daemons: rejected; unnecessary complexity and attack surface.
-
+ - Long-running agents/daemons: rejected; unnecessary complexity and attack surface.
