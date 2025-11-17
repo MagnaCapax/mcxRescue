@@ -221,8 +221,6 @@ tmux
 edac-utils
 smem
 nuttcp
-mcelog
-neofetch
 hwinfo
 lsscsi
 tofrodos
