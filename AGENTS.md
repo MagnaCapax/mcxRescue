@@ -75,11 +75,17 @@
 - Conventional Commit style: `type(scope): summary`
   - Types: `feat`, `fix`, `docs`, `ci`, `build`, `refactor`, `chore`, `revert`.
   - Summary <= 72 chars; imperative mood; no trailing period.
-  - Body explains the why, impact, and risks; reference ADR IDs if applicable.
-  - Separate logical changes into separate commits; avoid drive‑by edits.
+  - Body explains what changed, why, impact, risks; reference ADR IDs when applicable.
+- Git workflow & standards:
+  - Make small, focused commits representing a single logical change; commit early and often.
+  - Commit messages must clearly describe the changes and intent, not just reference ticket numbers.
+  - Always re-check `git status` before staging/committing; avoid clobbering others' work.
+  - Use `git commit --amend` only for updating the most recent, unpushed commit; avoid rewriting shared history.
+  - Keep generated artifacts and ephemeral files out of commits; honor `.gitignore`.
+  - When behavior or contracts change, commit code, tests (where present), docs, and ADRs together so history is coherent.
 - PR Checklist (minimum):
   - Reason for change stated clearly; impact on build/artifacts explained.
-  - Pre‑commit passes; SPDX headers present in new files.
+  - Pre-commit hooks and linters pass locally (e.g., `make lint` where available); SPDX headers present in new files.
   - For behavior/interface changes: ADR added and referenced.
   - Local build sanity check performed (or CI matrix covers it).
 
