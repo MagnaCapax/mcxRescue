@@ -32,15 +32,15 @@ At the same time, hooks and services must:
 - Fail forward with clear logs when network or dependencies are missing.
 
 ## Options Considered
-- Option A — Boot-time fetch only  
+- Option A — Boot-time fetch only
   Keep the existing behavior: no build-time fetch, only systemd loaders that
   clone/update on every boot.
 
-- Option B — Build-time preload only  
+- Option B — Build-time preload only
   Clone mcxForge/mcxTemplate into `/opt` during live-build and remove the
   boot-time loaders, relying entirely on the baked-in state.
 
-- Option C — Build-time preload plus boot-time update (Chosen)  
+- Option C — Build-time preload plus boot-time update (Chosen)
   During live-build, best-effort preload mcxForge/mcxTemplate into `/opt`
   using the same loader scripts as boot, but never fail the build if this
   fetch fails. At boot, keep the existing oneshot services so they update
@@ -109,4 +109,3 @@ Neutral:
 - `hooks/0005-mcxRescue-1000-mcxtemplate-loader.hook.chroot`
 - `files/hooks/load-mcxforge`
 - `files/hooks/load-mcxtemplate`
-
