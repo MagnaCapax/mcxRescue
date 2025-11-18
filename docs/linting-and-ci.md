@@ -74,4 +74,3 @@ Before committing:
 - Run `pre-commit run --all-files` locally when available.
 - For behavior changes, keep code, docs, and ADRs in the same logical change.
 - Where possible, run `make lint` to exercise the finnix live-build lint path.
-

@@ -100,12 +100,12 @@
 - Internal docs and comments may use candid language, including swearing.
 - Public surfaces (API payloads, logs, user-facing messages, CLI output) must remain professional and free of profanity.
 
-## Code Style & Tooling
+## Code Style & Tooling (Mandatory)
 - Shell: POSIX‑compatible; prefer `set -e` and explicit error handling. Run ShellCheck when available.
 - Python: Follow `black` and `flake8` per `pyproject.toml`.
 - YAML/JSON: Keep formatting consistent; `yamllint` and `check-json` run via pre‑commit.
 - Licensing: Maintain SPDX headers; validated by `reuse` in pre-commit.
-- Lint & CI Guardrails: See `docs/linting-and-ci.md` for concrete pre-commit and `make lint` rules which must be followed.
+- Lint & CI Guardrails: `docs/linting-and-ci.md` is mandatory reading. Its rules are not advisory; do not commit or open PRs that violate any listed pre-commit or `make lint` requirement.
 
 ## Pre-commit & Lint Checklist (Do Not Skip)
 - Scripts with a shebang must be executable (100755) or remove the shebang.
