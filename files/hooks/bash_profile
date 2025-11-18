@@ -45,3 +45,8 @@ geekbench() {
 
 # mcxForge tools on PATH for convenience (directory may appear later at boot)
 export PATH="/opt/mcxForge/bin:${PATH}"
+
+# mcxForge root bash customizations
+if [ -f /opt/mcxForge/etc/root.bashrc ]; then
+    . /opt/mcxForge/etc/root.bashrc
+fi
