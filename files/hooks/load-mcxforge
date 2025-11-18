@@ -5,33 +5,54 @@
 # SPDX-FileCopyrightText: Copyright (C) 2025 Magna Capax Finland Oy
 # SPDX-License-Identifier: MPL-2.0
 
-# Idempotently ensure /opt/mcxForge exists and is up-to-date.
-# Fetches from GitHub using shallow clone; updates via ff-only pull.
-
 set -eu
 
 # Ensure /opt exists
 mkdir -p /opt
+
+# Best-effort: wait until the system is fully running before network operations
+if command -v systemctl >/dev/null 2>&1; then
+    systemctl is-system-running --wait >/dev/null 2>&1 || true
+fi
 
 # Non-interactive git
 export GIT_TERMINAL_PROMPT=0
 
 REPO_URL="${MCXFORGE_REPO_URL:-https://github.com/MagnaCapax/mcxForge}"
 REPO_DIR="/opt/mcxForge"
+RETRIES="${MCXFORGE_RETRIES:-5}"
+RETRY_DELAY="${MCXFORGE_RETRY_DELAY:-5}"
+
+retry_git() {
+    retries="$1"
+    delay="$2"
+    shift 2
+
+    attempt=1
+    while [ "$attempt" -le "$retries" ]; then
+        if "$@"; then
+            return 0
+        fi
+        echo "load-mcxforge: git attempt ${attempt}/${retries} failed; retrying in ${delay}s" >&2
+        sleep "$delay" || break
+        attempt=$((attempt + 1))
+    done
+    return 1
+}
 
 echo "load-mcxforge: preparing ${REPO_DIR} from ${REPO_URL}" >&2
 
 if command -v git >/dev/null 2>&1; then
     if [ -d "${REPO_DIR}/.git" ]; then
-        git -C "${REPO_DIR}" pull --ff-only --quiet || {
-            echo "load-mcxforge: git pull failed; leaving existing checkout" >&2
-        }
+        if ! retry_git "$RETRIES" "$RETRY_DELAY" git -C "${REPO_DIR}" pull --ff-only --quiet; then
+            echo "load-mcxforge: git pull failed after retries; leaving existing checkout" >&2
+        fi
     else
         rm -rf "${REPO_DIR}" || true
-        git clone --depth=1 --quiet "${REPO_URL}" "${REPO_DIR}" || {
-            echo "load-mcxforge: clone failed" >&2
+        if ! retry_git "$RETRIES" "$RETRY_DELAY" git clone --depth=1 --quiet "${REPO_URL}" "${REPO_DIR}"; then
+            echo "load-mcxforge: clone failed after retries" >&2
             exit 1
-        }
+        fi
     fi
 else
     echo "load-mcxforge: 'git' not found; cannot fetch mcxForge" >&2

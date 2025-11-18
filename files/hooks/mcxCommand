@@ -10,6 +10,8 @@ set -eu
 # Extract mcxCommand URL from kernel cmdline
 MCX_COMMAND=""
 if [ -r /proc/cmdline ]; then
+    # /proc/cmdline is a single whitespace-separated line; iterate by word.
+    # shellcheck disable=SC2013
     for w in $(cat /proc/cmdline); do
         case "$w" in
             mcxCommand=*) MCX_COMMAND=${w#mcxCommand=};;
@@ -20,29 +22,37 @@ fi
 [ -n "$MCX_COMMAND" ] || exit 0
 
 # Minimal context for convenience (best-effort)
-export MCX_COMMAND
-export MCX_PRODUCT_ID="{{ PRODUCT_ID }}"
-export MCX_HOSTNAME="$(hostname -s 2>/dev/null || echo mcxrescue)"
-export MCX_ARCH="$(dpkg --print-architecture 2>/dev/null || uname -m)"
+MCX_PRODUCT_ID="{{ PRODUCT_ID }}"
+MCX_HOSTNAME="$(hostname -s 2>/dev/null || echo mcxrescue)"
+MCX_ARCH="$(dpkg --print-architecture 2>/dev/null || uname -m)"
+export MCX_COMMAND MCX_PRODUCT_ID MCX_HOSTNAME MCX_ARCH
 
 # Best-effort network details
 IF_ROUTE_INFO="$(ip route get 1.1.1.1 2>/dev/null || true)"
 MCX_IFACE="$(printf '%s\n' "$IF_ROUTE_INFO" | awk '/ dev / {for(i=1;i<=NF;i++){if($i=="dev"){print $(i+1); exit}}}')"
 MCX_IP4="$(printf '%s\n' "$IF_ROUTE_INFO" | awk '/ src / {for(i=1;i<=NF;i++){if($i=="src"){print $(i+1); exit}}}')"
-[ -n "$MCX_IFACE" ] && export MCX_IFACE || true
-[ -n "$MCX_IP4" ] && export MCX_IP4 || true
+if [ -n "$MCX_IFACE" ]; then
+    export MCX_IFACE
+fi
+if [ -n "$MCX_IP4" ]; then
+    export MCX_IP4
+fi
 
 # DHCP server (best-effort)
 get_dhcp_server() {
     # systemd-networkd leases
     if [ -d /run/systemd/netif/leases ]; then
-        awk -F= '/^SERVER_ADDRESS=/{print $2; found=1; exit} END{if(!found) exit 1}' /run/systemd/netif/leases/* 2>/dev/null && return 0 || true
+        if awk -F= '/^SERVER_ADDRESS=/{print $2; found=1; exit} END{if(!found) exit 1}' /run/systemd/netif/leases/* 2>/dev/null; then
+            return 0
+        fi
     fi
     # dhclient leases
-    awk '/dhcp-server-identifier/ {gsub(";","",$3); print $3; found=1; exit} END{if(!found) exit 1}' /var/lib/dhcp/dhclient*.leases 2>/dev/null && return 0 || true
+    if awk '/dhcp-server-identifier/ {gsub(";","",$3); print $3; found=1; exit} END{if(!found) exit 1}' /var/lib/dhcp/dhclient*.leases 2>/dev/null; then
+        return 0
+    fi
     return 1
 }
-if DHCP_SRV="$(get_dhcp_server 2>/dev/null || true)" && [ -n "$DHCP_SRV" ]; then
+if DHCP_SRV="$(get_dhcp_server 2>/dev/null)" && [ -n "$DHCP_SRV" ]; then
     export MCX_DHCP_SERVER="$DHCP_SRV"
 fi
 

@@ -8,9 +8,6 @@
 # Purpose:
 # - Idempotently ensure the mcxRescue template engine repository exists under /opt
 # - If present, update it with a fast-forward pull; if missing, perform a shallow clone
-# - This script is invoked by a oneshot systemd unit gated by kernel cmdline flag `load-mcxtemplate`
-
-# Fail fast on errors and undefined variables
 set -eu
 
 # Ensure /opt exists and change into it safely
@@ -19,26 +16,49 @@ if [ ! -d /opt ]; then
 fi
 cd /opt || exit 1
 
-# Ensure git is available; if not, exit gracefully (service will show failure)
+if command -v systemctl >/dev/null 2>&1; then
+    systemctl is-system-running --wait >/dev/null 2>&1 || true
+fi
+
 if ! command -v git >/dev/null 2>&1; then
     echo "load-mcxtemplate: 'git' not found in PATH; cannot fetch mcxRescue" >&2
     exit 1
 fi
 
-# Avoid interactive prompts if credentials would be requested
 export GIT_TERMINAL_PROMPT=0
 
-# Allow overrides via environment/kcmdline (can be wired later if needed)
 REPO_URL="${MCXTEMPLATE_REPO_URL:-https://github.com/MagnaCapax/mcxRescue}"
 REPO_DIR="${MCXTEMPLATE_DIR:-mcxRescue}"
+RETRIES="${MCXTEMPLATE_RETRIES:-5}"
+RETRY_DELAY="${MCXTEMPLATE_RETRY_DELAY:-5}"
+
+retry_git() {
+    retries="$1"
+    delay="$2"
+    shift 2
+
+    attempt=1
+    while [ "$attempt" -le "$retries" ]; do
+        if "$@"; then
+            return 0
+        fi
+        echo "load-mcxtemplate: git attempt ${attempt}/${retries} failed; retrying in ${delay}s" >&2
+        sleep "$delay" || break
+        attempt=$((attempt + 1))
+    done
+    return 1
+}
 
 # Idempotent fetch/update
 if [ -d "${REPO_DIR}/.git" ]; then
-    # Fast-forward update of existing checkout; no history rewrite
-    git -C "${REPO_DIR}" pull --ff-only --quiet
+    if ! retry_git "$RETRIES" "$RETRY_DELAY" git -C "${REPO_DIR}" pull --ff-only --quiet; then
+        echo "load-mcxtemplate: git pull failed after retries; leaving existing checkout" >&2
+    fi
 else
-    # Shallow clone for speed; sufficient for runtime usage
-    git clone --depth=1 --quiet "${REPO_URL}" "${REPO_DIR}"
+    if ! retry_git "$RETRIES" "$RETRY_DELAY" git clone --depth=1 --quiet "${REPO_URL}" "${REPO_DIR}"; then
+        echo "load-mcxtemplate: clone failed after retries" >&2
+        exit 1
+    fi
 fi
 
 echo "load-mcxtemplate: repository ready at /opt/${REPO_DIR}" >&2

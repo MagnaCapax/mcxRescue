@@ -63,7 +63,5 @@ geekbench() {
     fi
 }
 
-# mcxForge tools on PATH for convenience
-if [ -d /opt/mcxForge/bin ]; then
-    export PATH="/opt/mcxForge/bin:${PATH}"
-fi
+# mcxForge tools on PATH for convenience (directory may appear later at boot)
+export PATH="/opt/mcxForge/bin:${PATH}"
