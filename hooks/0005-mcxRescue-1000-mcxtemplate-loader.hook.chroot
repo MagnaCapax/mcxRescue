@@ -17,6 +17,6 @@ systemctl add-wants multi-user.target load-mcxtemplate.service
 # only needs to update. Do not fail the build if this fetch fails.
 if [ -x "/usr/lib/${PRODUCT_ID}/load-mcxtemplate" ]; then
     MCXTEMPLATE_RETRIES="${MCXTEMPLATE_RETRIES:-1}" MCXTEMPLATE_RETRY_DELAY="${MCXTEMPLATE_RETRY_DELAY:-5}" \
-        /usr/lib/"${PRODUCT_ID}"/load-mcxtemplate || \
+        /usr/lib/"${PRODUCT_ID}"/load-mcxtemplate ||
         echo "mcxtemplate-loader: preload failed; will retry at boot" >&2
 fi

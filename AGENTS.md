@@ -105,6 +105,7 @@
 - Python: Follow `black` and `flake8` per `pyproject.toml`.
 - YAML/JSON: Keep formatting consistent; `yamllint` and `check-json` run via pre‑commit.
 - Licensing: Maintain SPDX headers; validated by `reuse` in pre-commit.
+- Lint & CI Guardrails: See `docs/linting-and-ci.md` for concrete pre-commit and `make lint` rules which must be followed.
 
 ## Pre-commit & Lint Checklist (Do Not Skip)
 - Scripts with a shebang must be executable (100755) or remove the shebang.
