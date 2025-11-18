@@ -84,11 +84,15 @@
   - Local build sanity check performed (or CI matrix covers it).
 
 ## ADR Process (docs/adr)
-- One ADR decides one subject; include context, options, decision, consequences.
+- One ADR decides one subject; include context, options, decision, consequences. Multiple constraints are allowed only when they concern the same subject.
 - Status values: `Proposed`, `Accepted`, `Deprecated`, `Superseded` (must reference successor).
-- Numbering: Incremental `NNNN-title.md` (e.g., `0001-iso-naming.md`); update the index.
-- Index: Maintain `docs/adr/INDEX.md` listing ADR IDs, titles, and status.
+- Numbering: Incremental `NNNN-title.md` (e.g., `0001-iso-naming.md`).
+- Discoverability: There is no ADR index file; the directory listing under `docs/adr/` is the index. Before changing behavior, scan filenames and read relevant ADRs.
 - Template: Use `docs/adr/0000-template.md` to author new ADRs.
+
+## Language & Tone
+- Internal docs and comments may use candid language, including swearing.
+- Public surfaces (API payloads, logs, user-facing messages, CLI output) must remain professional and free of profanity.
 
 ## Code Style & Tooling
 - Shell: POSIX‑compatible; prefer `set -e` and explicit error handling. Run ShellCheck when available.

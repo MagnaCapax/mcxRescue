@@ -10,7 +10,7 @@ Process
 - One ADR decides one subject; keep scope tight and focused.
 - Status values: Proposed → Accepted → (optionally) Deprecated → Superseded.
 - Numbering: Use incremental IDs `NNNN-title.md` (e.g., `0001-iso-naming.md`).
-- Index: Update `INDEX.md` with ID, title, and current status for discoverability.
+- Discoverability: There is no ADR index file; use the directory listing under `docs/adr/` and filenames as the index.
 - Cross‑reference: Link related ADRs and PRs.
 
 When to write an ADR
