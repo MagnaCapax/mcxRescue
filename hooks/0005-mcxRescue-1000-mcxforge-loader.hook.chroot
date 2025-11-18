@@ -12,3 +12,11 @@ PRODUCT_ID="{{ PRODUCT_ID }}"
 install -D -m 0755 /hook-files/load-mcxforge "/usr/lib/${PRODUCT_ID}/load-mcxforge"
 install -D -m 0644 /hook-files/load-mcxforge.service /etc/systemd/system/load-mcxforge.service
 systemctl add-wants multi-user.target load-mcxforge.service
+
+# Best-effort: preload mcxForge in the chroot so the boot-time loader
+# only needs to update. Do not fail the build if this fetch fails.
+if [ -x "/usr/lib/${PRODUCT_ID}/load-mcxforge" ]; then
+    MCXFORGE_RETRIES="${MCXFORGE_RETRIES:-1}" MCXFORGE_RETRY_DELAY="${MCXFORGE_RETRY_DELAY:-5}" \
+        /usr/lib/"${PRODUCT_ID}"/load-mcxforge || \
+        echo "mcxforge-loader: preload failed; will retry at boot" >&2
+fi

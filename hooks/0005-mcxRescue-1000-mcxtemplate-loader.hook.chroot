@@ -12,3 +12,11 @@ PRODUCT_ID="{{ PRODUCT_ID }}"
 install -D -m 0755 /hook-files/load-mcxtemplate "/usr/lib/${PRODUCT_ID}/load-mcxtemplate"
 install -D -m 0644 /hook-files/load-mcxtemplate.service /etc/systemd/system/load-mcxtemplate.service
 systemctl add-wants multi-user.target load-mcxtemplate.service
+
+# Best-effort: preload mcxTemplate in the chroot so the boot-time loader
+# only needs to update. Do not fail the build if this fetch fails.
+if [ -x "/usr/lib/${PRODUCT_ID}/load-mcxtemplate" ]; then
+    MCXTEMPLATE_RETRIES="${MCXTEMPLATE_RETRIES:-1}" MCXTEMPLATE_RETRY_DELAY="${MCXTEMPLATE_RETRY_DELAY:-5}" \
+        /usr/lib/"${PRODUCT_ID}"/load-mcxtemplate || \
+        echo "mcxtemplate-loader: preload failed; will retry at boot" >&2
+fi
