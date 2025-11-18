@@ -26,41 +26,21 @@ alias httpd='python3 -m http.server'
 # YABS: Yet Another Bench Script (fetch and run)
 alias yabs='wget -qO- yabs.sh | bash'
 
-# Geekbench helper: download static Geekbench 6 tarball if missing, then run
-# Usage: geekbench [version]
-# Defaults to 6.5.0 unless overridden by GEEKBENCH_VER / GEEKBENCH_URL
+# Geekbench helper: delegate to mcxForge CPU benchmark if available
 geekbench() {
-    local ver
-    ver=${1:-${GEEKBENCH_VER:-6.5.0}}
-    local url
-    url=${GEEKBENCH_URL:-"https://cdn.geekbench.com/Geekbench-${ver}-Linux.tar.gz"}
-    local base="/opt/Geekbench-${ver}-Linux"
-    local tarball="/tmp/Geekbench-${ver}-Linux.tar.gz"
+    local script="/opt/mcxForge/bin/benchmarkCPUGeekbench.php"
 
-    mkdir -p /opt || true
-    if [ ! -x "${base}/geekbench6" ] && [ ! -x "${base}/geekbench_x86_64" ]; then
-        echo "[geekbench] fetching ${url} -> ${tarball}"
-        wget -q -O "${tarball}" "${url}" || { echo "[geekbench] download failed" >&2; return 1; }
-        echo "[geekbench] extracting to ${base}"
-        rm -rf "${base}"
-        tar -C /opt -xzf "${tarball}" || { echo "[geekbench] extract failed" >&2; return 1; }
+    if ! command -v php >/dev/null 2>&1; then
+        echo "[geekbench] php not found; CPU benchmark unavailable" >&2
+        return 1
     fi
 
-    if [ -x "${base}/geekbench6" ]; then
-        "${base}/geekbench6"
-    elif [ -x "${base}/geekbench_x86_64" ]; then
-        "${base}/geekbench_x86_64"
-    else
-        # Try a best-effort fallback
-        local bin
-        bin=$(find "${base}" -maxdepth 1 -type f -perm -111 -name 'geekbench*' | head -n1 || true)
-        if [ -n "${bin}" ]; then
-            "${bin}"
-        else
-            echo "[geekbench] executable not found in ${base}" >&2
-            return 1
-        fi
+    if [ ! -r "${script}" ]; then
+        echo "[geekbench] ${script} not found; ensure mcxForge is loaded" >&2
+        return 1
     fi
+
+    php "${script}" "$@"
 }
 
 # mcxForge tools on PATH for convenience (directory may appear later at boot)
