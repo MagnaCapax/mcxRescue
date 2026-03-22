@@ -1,0 +1,14 @@
+{
+  "name": "bmc-bios-flash",
+  "version": "1.0.0",
+  "description": "Remote BIOS reflash via AMI MegaRAC BMC web UI using Playwright",
+  "license": "MPL-2.0",
+  "main": "bmcBiosFlash.js",
+  "scripts": {
+    "flash": "node bmcBiosFlash.js",
+    "install-browser": "npx playwright install chromium"
+  },
+  "dependencies": {
+    "playwright": "^1.40.0"
+  }
+}
