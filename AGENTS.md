@@ -9,6 +9,15 @@
 - AGENTS.md is the governing law for contributions to this repository.
 - Code is the ground truth for behavior; docs clarify intent. If docs and code disagree, follow the code and update the docs.
 - Material changes to behavior, interfaces, security, or workflows require an ADR under `docs/adr/` (one subject per ADR; cross‑reference related ADRs).
+- Accepted ADRs are binding: follow them, or supersede them with a new ADR; never work around them.
+- Start with [`development/`](development/README.md): the [engineering principles](development/engineering-principles.md) explain the organisation-wide rules with their reasons and the mistakes that taught them, and list the sibling repositories' docs and decisions. [ADR 0003](docs/adr/0003-architecture-layout-and-languages.md) records this repository's architecture, layout and languages, and which shell and Python are exceptions to the PHP-for-logic rule.
+
+## Principles
+The short form of `development/engineering-principles.md`, merged with the Generic Doctrine below (which already carries KISS, DRY, YAGNI, pit of success and backward compatibility):
+- Delete first, in the SpaceX order: question the requirement, delete the part, simplify, then speed up, then automate (a needed but broken part is debugged, not deleted).
+- Files around 150 lines (a target, not a hard limit); split when changing a file anyway.
+- Tests that can fail: here the lint path, a build and a boot are the tests; read their result, never hide it.
+- Before committing, review the change with the [review unit](https://github.com/MagnaCapax/mcxPikkumies/tree/main/pikkumies/tools/development/code-review) against these rules and the ADRs.
 
 ## Generic Doctrine (Always Applies)
 - KISS: Keep implementations simple and obvious; avoid unnecessary abstraction.
@@ -70,6 +79,7 @@
 - `live-build/`: Upstream live‑build submodule.
 - Lint/config: `.pre-commit-config.yaml`, `.yamllint.yml`, `pyproject.toml`.
 - Docs: `docs/adr/` for decision records (see below).
+- `development/`: contributor docs and the engineering principles; start there.
 
 ## Commit & PR Rules
 - Conventional Commit style: `type(scope): summary`
