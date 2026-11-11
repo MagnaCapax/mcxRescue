@@ -27,7 +27,7 @@ We need a way to perform post-boot actions on bare-metal and seedbox servers boo
 - Minimal local code; fewer failure points; easy to reason about.
 - Trust model is DHCP/iPXE; accepting self-signed HTTPS is acceptable in the controlled network.
 - Idempotency is the responsibility of the remote script.
-- Future hardening (if needed) could add optional integrity (e.g., `mcxSha256`) or strict TLS. That would require a follow-up ADR.
+- Future hardening (if needed) could add optional integrity (e.g., `mcxSha256`) or strict TLS. That would require a follow-up ADR. ADR 0004 added the optional `mcxSha256` pin (2026-11-11).
 
 ## Alternatives Considered
 - Extra parameters (status URL, args, timeouts): rejected as option creep; simplicity wins.

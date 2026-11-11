@@ -48,17 +48,15 @@ The short form of `development/engineering-principles.md`, merged with the Gener
 - Services & Paths: Place installed helpers under `/usr/lib/${PRODUCT_ID}` and units under `/etc/systemd/system`. Respect templating variables.
 - Languages & Dependencies: Do not introduce new language runtimes; keep hook dependencies minimal and documented.
 
-### Remote Command + Status (kernel cmdline driven)
+### Remote Command (kernel cmdline driven; ADR 0001, ADR 0004)
 - Inputs (kernel cmdline):
-  - `mcxCmd`: HTTPS URL to a shell script to execute (downloaded and run non‑interactively).
-  - `mcxStatus`: URL to receive status updates via GET (append `state=` and basic metadata).
-  - Optional: `mcxId`, `mcxArgs`, `mcxTimeout` (seconds).
-- Runner behavior (oneshot service):
-  - Always attempts to run; if inputs missing, exits quickly without error.
-  - Download script to `/run`, execute with POSIX sh; small retries and timeouts; no interactivity.
-  - Status pings: `?state=start|ok|err` plus `host`, `ts`, and `id` when available; include `rc` on error.
-  - Prefer not relying solely on `network-online` gating; implement brief internal retries to avoid missing execution.
-  - Log concise messages; never block multi‑user.
+  - `mcxCommand`: URL of a shell script to execute (downloaded to `/run` and run non‑interactively).
+  - Optional `mcxSha256`: 64 hex digits; when present the script runs only if its SHA-256 matches.
+- Runner behavior (oneshot service, `files/hooks/mcxCommand`):
+  - If `mcxCommand` is absent, exits 0 at once.
+  - Waits for `systemctl is-system-running --wait`, downloads, checks the pin when given, runs the script with bash.
+  - No status callbacks and no extra parameters (ADR 0001 rejected them as option creep).
+  - Logs one start line (URL without query string, pinned yes/no) and one done line with the return code; never blocks multi‑user.
 
 ## Live Boot Hooks (Operational Rules)
 - Idempotency:
