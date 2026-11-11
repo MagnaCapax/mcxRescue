@@ -1,12 +1,12 @@
 #!/bin/sh
 
 # SPDX-PackageSummary: mcxRescue-live-build
-# SPDX-FileComment: mcxRescue Template Engine Loader
+# SPDX-FileComment: mcxTemplate Engine Loader
 # SPDX-FileCopyrightText: Copyright (C) 2025 Magna Capax Finland Oy
 # SPDX-License-Identifier: MPL-2.0
 
 # Purpose:
-# - Idempotently ensure the mcxRescue template engine repository exists under /opt
+# - Idempotently ensure the mcxTemplate engine repository exists at /opt/mcxTemplate
 # - If present, update it with a fast-forward pull; if missing, perform a shallow clone
 set -eu
 
@@ -21,14 +21,14 @@ if command -v systemctl >/dev/null 2>&1; then
 fi
 
 if ! command -v git >/dev/null 2>&1; then
-    echo "load-mcxtemplate: 'git' not found in PATH; cannot fetch mcxRescue" >&2
+    echo "load-mcxtemplate: 'git' not found in PATH; cannot fetch mcxTemplate" >&2
     exit 1
 fi
 
 export GIT_TERMINAL_PROMPT=0
 
-REPO_URL="${MCXTEMPLATE_REPO_URL:-https://github.com/MagnaCapax/mcxRescue}"
-REPO_DIR="${MCXTEMPLATE_DIR:-mcxRescue}"
+REPO_URL="${MCXTEMPLATE_REPO_URL:-https://github.com/MagnaCapax/mcxTemplate}"
+REPO_DIR="${MCXTEMPLATE_DIR:-mcxTemplate}"
 RETRIES="${MCXTEMPLATE_RETRIES:-5}"
 RETRY_DELAY="${MCXTEMPLATE_RETRY_DELAY:-5}"
 

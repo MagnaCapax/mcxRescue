@@ -11,7 +11,7 @@ Date: 2025-11-18
 mcxRescue relies on two Git-based components at runtime:
 
 - mcxForge: tools and helpers installed under `/opt/mcxForge`.
-- mcxTemplate: the mcxRescue template engine under `/opt/mcxRescue`.
+- mcxTemplate: the template engine under `/opt/mcxTemplate`.
 
 Initially, both were fetched only at boot time via oneshot systemd units
 (`load-mcxforge.service`, `load-mcxtemplate.service`) that clone or update
@@ -68,7 +68,7 @@ Implementation details:
 
 - The boot-time oneshot services and loader helpers remain responsible for:
 
-  - Ensuring `/opt/mcxForge` and `/opt/mcxRescue` exist.
+  - Ensuring `/opt/mcxForge` and `/opt/mcxTemplate` exist.
   - Performing fast-forward `git pull` updates when a checkout already exists.
   - Cloning fresh checkouts if preloading failed or there is no `.git`.
 
