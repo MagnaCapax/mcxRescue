@@ -15,8 +15,8 @@ if [ -r /proc/cmdline ]; then
     # shellcheck disable=SC2013
     for w in $(cat /proc/cmdline); do
         case "$w" in
-            mcxCommand=*) MCX_COMMAND=${w#mcxCommand=};;
-            mcxSha256=*) MCX_SHA256=${w#mcxSha256=};;
+        mcxCommand=*) MCX_COMMAND=${w#mcxCommand=} ;;
+        mcxSha256=*) MCX_SHA256=${w#mcxSha256=} ;;
         esac
     done
 fi
@@ -30,7 +30,10 @@ MCX_COMMAND_LOG=${MCX_COMMAND%%\?*}
 if [ -n "$MCX_SHA256" ]; then
     MCX_SHA256=$(printf '%s' "$MCX_SHA256" | tr 'A-F' 'a-f')
     case "$MCX_SHA256" in
-        *[!0-9a-f]*) echo "mcxCommand: mcxSha256 is not hex; not running" >&2; exit 1;;
+    *[!0-9a-f]*)
+        echo "mcxCommand: mcxSha256 is not hex; not running" >&2
+        exit 1
+        ;;
     esac
     if [ "$(printf '%s' "$MCX_SHA256" | wc -c)" -ne 64 ]; then
         echo "mcxCommand: mcxSha256 is not 64 hex digits; not running" >&2
