@@ -83,13 +83,25 @@ fi
 
 echo "mcxCommand: start url=$MCX_COMMAND_LOG host=$MCX_HOSTNAME pinned=$([ -n "$MCX_SHA256" ] && echo yes || echo no)" >&2
 
+# DHCP is not ordered before this unit (the systemd hook clears network-online.target.wants), so
+# the network can still be coming up here: retry the download for up to FETCH_WINDOW seconds.
+FETCH_WINDOW=300
 tmp="/run/mcxCommand.$$.sh"
 rm -f "$tmp"
-if ! wget -q --no-check-certificate -O "$tmp" "$MCX_COMMAND"; then
-    echo "mcxCommand: download failed url=$MCX_COMMAND_LOG" >&2
-    rm -f "$tmp"
-    exit 1
-fi
+fetch_deadline=$(($(date +%s) + FETCH_WINDOW))
+attempts=0
+until wget -q -T 15 -t 1 --no-check-certificate -O "$tmp" "$MCX_COMMAND"; do
+    attempts=$((attempts + 1))
+    if [ "$(date +%s)" -ge "$fetch_deadline" ]; then
+        echo "mcxCommand: download failed url=$MCX_COMMAND_LOG attempts=$attempts" >&2
+        rm -f "$tmp"
+        exit 1
+    fi
+    if [ "$attempts" -eq 1 ]; then
+        echo "mcxCommand: download not possible yet, retrying for up to ${FETCH_WINDOW}s url=$MCX_COMMAND_LOG" >&2
+    fi
+    sleep 5
+done
 
 if [ -n "$MCX_SHA256" ]; then
     got=$(sha256sum "$tmp" | awk '{print $1}')

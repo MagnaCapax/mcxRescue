@@ -52,9 +52,9 @@ The short form of `development/engineering-principles.md`, merged with the Gener
 - Inputs (kernel cmdline):
   - `mcxCommand`: URL of a shell script to execute (downloaded to `/run` and run non‑interactively).
   - Optional `mcxSha256`: 64 hex digits; when present the script runs only if its SHA-256 matches.
-- Runner behavior (oneshot service, `files/hooks/mcxCommand`):
+- Runner behavior (`Type=exec` service, never oneshot; `files/hooks/mcxCommand`):
   - If `mcxCommand` is absent, exits 0 at once.
-  - Waits for `systemctl is-system-running --wait`, downloads, checks the pin when given, runs the script with bash.
+  - Waits for `systemctl is-system-running --wait`, downloads (retried every 5 s for up to 300 s while the network comes up), checks the pin when given, runs the script with bash.
   - No status callbacks and no extra parameters (ADR 0001 rejected them as option creep).
   - Logs one start line (URL without query string, pinned yes/no) and one done line with the return code; never blocks multi‑user.
 

@@ -13,6 +13,13 @@ We need a way to perform post-boot actions on bare-metal and seedbox servers boo
 ## Decision
 - Kernel parameter: `mcxCommand` (lowerCamelCase). Value is an HTTPS URL pointing to a shell script.
 - Execution point: after reaching multi-user target. We do not gate on `network-online`; in this environment DHCP/network is already up by the time we act.
+  - Amended 2026-11-12: that premise is false. Once the unit stopped
+    deadlocking (Type=exec, below), it started before DHCP had finished
+    and its single `wget` failed. Gating on `network-online.target` does
+    not help either, because the systemd hook clears
+    `network-online.target.wants`. The runner instead retries the
+    download every 5 s for up to 300 s (15 s timeout per attempt), then
+    fails with one log line giving the attempt count.
 - Runner: a tiny POSIX shell helper `/usr/lib/${PRODUCT_ID}/mcxCommand` invoked by `mcxCommand.service` with `ConditionKernelCommandLine=|mcxCommand`.
 - Behavior: download and execute the script, YABS-style:
   - `wget -qO- --no-check-certificate "$mcxCommand" | bash`
