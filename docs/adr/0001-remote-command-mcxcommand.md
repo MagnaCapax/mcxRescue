@@ -20,6 +20,7 @@ We need a way to perform post-boot actions on bare-metal and seedbox servers boo
 - Environment (best-effort, optional): export a small set for the script’s convenience:
   - `MCX_COMMAND`, `MCX_PRODUCT_ID`, `MCX_HOSTNAME`, `MCX_ARCH`, `MCX_IFACE`, `MCX_IP4`, `MCX_DHCP_SERVER`.
 - Last-at-boot approximation: the runner waits for `systemctl is-system-running --wait` if available before executing, to defer until the system reaches the `running`/`degraded` state.
+  - The unit is `Type=exec`, never `Type=oneshot` (2026-11-12). A oneshot start job stays open until the script exits, and the system stays `starting` while any start job is open, so the wait never returns. Observed on a 12c3a09 image: `mcxCommand.service` "activating" for over 5 minutes, `systemctl list-jobs` showing only its own start job and `multi-user.target` waiting on it. The `load-mcxtemplate` and `load-mcxforge` units used the same wait as oneshots and were killed by their 90 s start timeout before doing any work; they are `Type=exec` too.
 - Logging: emit one start line and one completion line with return code to the journal. No status callbacks.
 
 ## Consequences

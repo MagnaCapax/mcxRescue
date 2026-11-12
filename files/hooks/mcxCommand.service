@@ -9,7 +9,7 @@ ConditionKernelCommandLine=|mcxCommand
 After=getty.target
 
 [Service]
-Type=oneshot
+Type=exec
 ExecStart=/usr/lib/{{ PRODUCT_ID }}/mcxCommand
 
 [Install]
