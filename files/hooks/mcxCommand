@@ -32,7 +32,7 @@ if [ -n "$MCX_SHA256" ]; then
     case "$MCX_SHA256" in
         *[!0-9a-f]*) echo "mcxCommand: mcxSha256 is not hex; not running" >&2; exit 1;;
     esac
-    if [ "${#MCX_SHA256}" -ne 64 ]; then
+    if [ "$(printf '%s' "$MCX_SHA256" | wc -c)" -ne 64 ]; then
         echo "mcxCommand: mcxSha256 is not 64 hex digits; not running" >&2
         exit 1
     fi

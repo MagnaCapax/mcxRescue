@@ -29,7 +29,7 @@ retry_git() {
     shift 2
 
     attempt=1
-    while [ "$attempt" -le "$retries" ]; then
+    while [ "$attempt" -le "$retries" ]; do
         if "$@"; then
             return 0
         fi
