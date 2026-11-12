@@ -14,7 +14,11 @@ for fn in /etc/ssh/sshd_config /etc/ssh/sshd_config.d/*.conf; do
     keytypes="$(sed -E 's,^#?HostKey .*/ssh_host_(.*?)_key,\1,;t;d' "${fn}")"
     for keytype in ${keytypes}; do
         if [ ! -e "/etc/ssh/ssh_host_${keytype}_key" ]; then
-            ssh-keygen -q -f "/etc/ssh/ssh_host_${keytype}_key" -N "" -t "${keytype}"
+            # OpenSSH 10.6 lists "#HostKey .../ssh_host_mldsa44_ed25519_key", a type its ssh-keygen cannot create
+            # ("unknown key type"). Under set -e that one type failed the whole ExecStartPre and sshd never started;
+            # skip it and let "sshd -t" (the next ExecStartPre) refuse if no usable host key is left.
+            ssh-keygen -q -f "/etc/ssh/ssh_host_${keytype}_key" -N "" -t "${keytype}" \
+                || echo "sshd-keygen: skipping key type ${keytype}" >&2
         fi
     done
 done
