@@ -48,15 +48,14 @@ The short form of `development/engineering-principles.md`, merged with the Gener
 - Services & Paths: Place installed helpers under `/usr/lib/${PRODUCT_ID}` and units under `/etc/systemd/system`. Respect templating variables.
 - Languages & Dependencies: Do not introduce new language runtimes; keep hook dependencies minimal and documented.
 
-### Remote Command (kernel cmdline driven; ADR 0001, ADR 0004)
+### Remote Command (kernel cmdline driven; ADR 0001)
 - Inputs (kernel cmdline):
   - `mcxCommand`: URL of a shell script to execute (downloaded to `/run` and run non‑interactively).
-  - Optional `mcxSha256`: 64 hex digits; when present the script runs only if its SHA-256 matches.
 - Runner behavior (`Type=exec` service, never oneshot; `files/hooks/mcxCommand`):
   - If `mcxCommand` is absent, exits 0 at once.
-  - Waits for `systemctl is-system-running --wait`, downloads (retried every 5 s for up to 300 s while the network comes up), checks the pin when given, runs the script with bash.
+  - Waits for `systemctl is-system-running --wait`, downloads (retried every 5 s for up to 300 s while the network comes up), runs the script with bash.
   - No status callbacks and no extra parameters (ADR 0001 rejected them as option creep).
-  - Logs one start line (URL without query string, pinned yes/no) and one done line with the return code; never blocks multi‑user.
+  - Logs one start line (URL without query string) and one done line with the return code; never blocks multi‑user.
 
 ## Live Boot Hooks (Operational Rules)
 - Idempotency:
